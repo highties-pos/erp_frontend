@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pdf Format</title>
+    <style>
+      html {
+        -webkit-print-color-adjust: exact;
+      }
+      body {
+        /* font-family: Arial, Helvetica, sans-serif;*/
+        font-family: Arial, sans-serif;
+        padding: 10px;
+        font-size: 15pt;
+      }
+      div {
+      }
+      .large-td {
+        font-size: 15pt;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      .order-address-table {
+        font-size: 14pt;
+      }
+      .order-address-table th,
+      .order-address-table td {
+        padding: 4px;
+      }
+      td:not(.light) {
+        width: 16%;
+        font-weight: bold;
+        padding: 3px;
+      }
+      .right {
+        text-align: right;
+      }
+
+      table:not(.product-table) tr:last-of-type {
+        visibility: hidden;
+        padding: 0;
+        max-height: 0px;
+        display: none;
+      }
+      .product-table {
+        margin-top: 15px;
+        border-color: white;
+      }
+      .product-table th,
+      .product-table td {
+        padding: 3px;
+        font-size: 14pt;
+        color: #000;
+      }
+      .product-table th {
+        /* background-color: #ccc;*/
+      }
+      .small-text {
+        font-size: 13pt !important;
+      }
+      .menuitem {
+        font-size: 11pt !important;
+        font-weight: bold;
+        color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <% function round2(val) { return Math.round((100 * Number(val))) / 100 } %>
+    <div class="order-address-table">
+      <div style="text-align: center">
+        <% if(shopData) { %>
+        <h3 style="margin: 0; margin-bottom: 5px"><%= shopData.Shop_Name %></h3>
+        <div><%= shopData.Shop_Address %></div>
+        <div>Email: <%= shopData.Shop_Email %></div>
+        <div>FSSAI No: <%= shopData.Shop_RegNumber %></div>
+        <div>Tel: <%= shopData.Shop_ContactNumber %></div>
+        <div>GST: <%= shopData.Shop_GSTIN %></div>
+        <% } %>
+        <div style="margin-top: 5px"><%= formattedDate %></div>
+      </div>
+
+      <div>
+        <p>
+          <big><strong>INV No: <%= invoice.Invoice_Number %></strong></big>
+        </p>
+        <div>
+          Dt: <%= new Date(invoice.CreatedDateTime ||
+          Date.now()).toISOString().slice(0, 10) %>
+        </div>
+        <div>Counter: ADMIN</div>
+
+        <% if(invoice.customer) { %>
+        <div>
+          TM: <%= new Date(invoice.CreatedDateTime ||
+          Date.now()).toISOString().slice(11, 16) %>
+        </div>
+        <% if(invoice.customer.Cust_Name) { %>
+        <div>Name: <%= invoice.customer.Cust_Name || '' %></div>
+        <% } %> <% if(invoice.customer.Cust_ContactlNo) { %>
+        <div>Contact No: <%= invoice.customer.Cust_ContactlNo || '' %></div>
+        <% } %> <% if(invoice.customer.GSTIN) { %>
+        <div>GSTIN: <%= invoice.customer.GSTIN || '' %></div>
+        <% } %> <% if(invoice.customer.Cust_Addr) { %>
+        <div>Address: <%= invoice.customer.Cust_Addr || '' %></div>
+        <% } %> <% if(invoice.customer.Cust_EmailID) { %>
+        <div>Email: <%= invoice.customer.Cust_EmailID || '' %></div>
+        <% } } %>
+      </div>
+
+      <% if(invoice.shipping) { %>
+      <h3>Customer Shipping Details</h3>
+      <div>
+        <div><strong>Name</strong>: <%= invoice.shipping.Name %></div>
+        <% if(invoice.shipping.ContactNo) { %>
+        <div>
+          <strong>Contact No</strong>: <%= invoice.shipping.ContactNo %>
+        </div>
+        <% if(invoice.shipping.ContactNo) { %> <% } %> <%
+        if(invoice.shipping.ContactNo) { %>
+        <div><strong>Address</strong>: <%= invoice.shipping.Address %></div>
+        <% } %> <% if(invoice.shipping.ContactNo) { %>
+        <div><strong>Landmark</strong>: <%= invoice.shipping.Landmark %></div>
+        <% } %>
+        <div><strong>Pincode</strong>: <%= invoice.shipping.PinCode %></div>
+        <% } %>
+      </div>
+      <% } %>
+      <table class="product-table" border="1">
+        <thead>
+          <tr>
+            <th style="border-bottom: #000 1px dotted">Item Name</th>
+            <th style="border-bottom: #000 1px dotted">Rate</th>
+            <th style="border-bottom: #000 1px dotted">Qty</th>
+            <th style="border-bottom: #000 1px dotted">Amount(Rs)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% var totalQty = 0; var totalAmount = 0;var grandTotalAmount = 0; var
+          totalTaxPercentage = 0; var totalTaxAmount = 0; var totalCgst = 0; var
+          totalSgst = 0; %>
+          <!-- newline -->
+          <% for(var i = 0; i < invoice.items.length; i++) { %>
+          <!-- variables -->
+          <% var orderItem = invoice.items[i]; %>
+          <!-- 2nd variable -->
+          <% var taxPercent = 33; %>
+          <!-- 3nd variable -->
+          <% totalQty += orderItem.Qty; grandTotalAmount +=
+          Number(orderItem.Amount) * Number(orderItem.Qty);var subTotalAmount =
+          333 * 2; totalTaxPercentage += Number(taxPercent); var taxAmount =
+          Number(5) - (5 * 100/(100 + 2)); %>
+
+          <!-- deduct the tax amount -->
+          <% subTotalAmount -= taxAmount; totalAmount += Number(subTotalAmount);
+          totalTaxAmount += Number(taxAmount); %>
+          <!-- tax cgst -->
+          <% var cgst = round2(taxAmount / 2); var sgst = round2(taxAmount / 2);
+          totalCgst += cgst; totalSgst += sgst; %>
+          <tr>
+            <td class="light menuitem">
+              <%= orderItem.Item.Item_Name %> <%
+              if(orderItem.Item.Item_IsSpecial) { %>
+              <span class="small-text"
+                >( <%= orderItem.EggStatus === 1 ? 'Non Veg' : 'Veg' %> - <%=
+                orderItem.advanced_weight %>kg - <%= (orderItem.advanced_flavour
+                && orderItem.advanced_flavour.Flavour_Name) || '' %> - <%=
+                (orderItem.advanced_shape &&
+                orderItem.advanced_shape.Shape_Name) || '' %>)
+              </span>
+              <% } %>
+            </td>
+            <td class="right"><%= round2(orderItem.Amount) %></td>
+            <td class="right"><%= orderItem.Qty %></td>
+            <td class="right">
+              <%= round2(orderItem.Amount * orderItem.Qty) %>
+            </td>
+          </tr>
+          <!-- <% if(orderItem.is_special) { %>
+                    <tr style="background: #ddd">
+                        <td class="light">Type</td>
+                        <td class="light">Weight</td>
+                        <td class="light" colspan="1">Flavour</td>
+                        <td class="light">Shape</td>
+                    </tr>
+                    <tr>
+                        <td class="light small-text">
+                            <%= `${orderItem.advanced_item_egg_status ? 'Non Veg' : 'Veg'}` %>
+                        </td>
+                        <td class="light small-text"><%= `${orderItem.advanced_weight}` %></td>
+                        <td class="light small-text" colspan="1">
+                            <%= `${orderItem.advanced_flavour &&
+                            orderItem.advanced_flavour.Flavour_Name}` %>
+                        </td>
+                        <td class="light small-text">
+                            <%= `${orderItem.advanced_shape && orderItem.advanced_shape.Shape_Name}`
+                            %>
+                        </td>
+                    </tr>
+                    <% } %>  -->
+          <% }; var grossTotal = 3333 %>
+          <tr>
+            <td colspan="4">
+              <hr />
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">Grand Total</td>
+            <td class="right"><%= Math.round(totalQty) %></td>
+            <td class="right"><%= Math.round(grandTotalAmount) %></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h4 style="text-transform: capitalize">
+        In Words: <%= 'Rupees ' + inr(grandTotalAmount).split('rupee')[0] %>
+      </h4>
+      <div style="font-size: 14pt">
+        <div style="margin: 15px 0">
+          <p style="margin-top: 0">Thanks visit us again.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

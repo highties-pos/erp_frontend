@@ -1,0 +1,15 @@
+select {
+    display: block !important;
+}
+input,
+textarea {
+    box-shadow: none !important;
+    background-color: #fff !important;
+    border: 3px solid #dadada;
+    resize: none;
+    display: block;
+    width: 100%;
+    &:focus {
+        border: 3px solid #3f85ff;
+    }
+}
